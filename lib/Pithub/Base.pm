@@ -477,6 +477,7 @@ my @TOKEN_REQUIRED_REGEXP = (
     qr{^PUT /gists/[^/]+/star$},
     qr{^PUT /orgs/[^/]+/public_members/.*?$},
     qr{^PUT /repos/[^/]+/[^/]+/collaborators/.*?$},
+    qr{^PUT /repos/[^/]+/[^/]+/contents/.*?$},
     qr{^PUT /repos/[^/]+/[^/]+/issues/[^/]+/labels$},
     qr{^PUT /repos/[^/]+/[^/]+/pulls/[^/]+/merge$},
     qr{^PUT /teams/[^/]+/members/.*?$},

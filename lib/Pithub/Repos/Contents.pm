@@ -4,6 +4,7 @@ package Pithub::Repos::Contents;
 
 use Moo;
 use Carp qw(croak);
+use MIME::Base64 'encode_base64';
 extends 'Pithub::Base';
 
 =method archive
@@ -163,6 +164,54 @@ sub readme {
     return $self->request(
         method => 'GET',
         path   => sprintf( '/repos/%s/%s/readme', delete $args{user}, delete $args{repo} ),
+        %args,
+    );
+}
+
+sub create {
+    my ($self, %args) = @_;
+    $self->_validate_user_repo_args( \%args );
+    my $path = delete $args{path}
+        or croak "Missing key in parameters: path";
+    my $data = delete $args{data}
+        or croak "Missing key in parameters: data";
+    ref($data) eq 'HASH'
+        or croak 'Invalid data. Must be a hash reference';
+    for my $key (qw(content message)) {
+        unless (defined $data->{$key}) {
+            croak "Missing key in parameters: data.$key";
+        }
+    }
+    $data->{content} = encode_base64($data->{content});
+
+    return $self->request(
+        method => 'PUT',
+        path   => sprintf('/repos/%s/%s/contents/%s', delete $args{user}, delete $args{repo}, $path),
+        data   => $data,
+        %args,
+    );
+}
+
+sub update {
+    my ($self, %args) = @_;
+    $self->_validate_user_repo_args( \%args );
+    my $path = delete $args{path}
+        or croak "Missing key in parameters: path";
+    my $data = delete $args{data}
+        or croak "Missing key in parameters: data";
+    ref($data) eq 'HASH'
+        or croak 'Invalid data. Must be a hash reference';
+    for my $key (qw(sha content message)) {
+        unless (defined $data->{$key}) {
+            croak "Missing key in parameters: data.$key";
+        }
+    }
+    $data->{content} = encode_base64($data->{content});
+
+    return $self->request(
+        method => 'PUT',
+        path   => sprintf('/repos/%s/%s/contents/%s', delete $args{user}, delete $args{repo}, $path),
+        data   => $data,
         %args,
     );
 }
